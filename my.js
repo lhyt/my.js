@@ -140,6 +140,9 @@
             this.alllist = [];
             this.err = undefined;
             this.israce = false;
+            this.handlerace = false;
+            this.racinglist = []
+            this.ok = false
 
             this.then = function(callback){
                 that.list.push(callback);
@@ -148,7 +151,14 @@
 
             this.resolve = function(data){
             	that.data = data || that.data
-
+            	if(that.israce&&that.handlerace){
+            		that.ok = true
+            	}else if(that.israce){
+            		that.handlerace = true;
+            		this.state = 'resolved'
+            		return;
+            	}
+            	
             	if(that.isall){
             		that.allcount++
             	}else if(count == that.list.length) {//then
@@ -166,9 +176,20 @@
                 
             }
             this.alling = function(){
-            	that.alllist.forEach(function(x){
+            	that.alllist.forEach(function(x,index){
             		x(that.resolve);
             	})
+            }
+
+            this.racing = function(){
+            	that.alllist.forEach(function(x,index){
+            		x(that.resolve,that.begin);
+            	})    	
+            }
+            this.begin = function(){
+            	if(that.ok){
+            		throw Error('sorry!i have to throw error to stop other function')
+            	}
             }
 
             this.reject = function(err){
@@ -185,9 +206,9 @@
             }
 
             this.race = function(arr){
-            	that.list = arr;
+            	that.alllist = arr;
+            	fn(that.racing);	
             	that.israce = true;
-            	fn(that.alling);
             	
             }
             setTimeout(function(){
