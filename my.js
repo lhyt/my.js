@@ -252,11 +252,6 @@
 			return constructorFunction.call(obj);
 		},
 
-		let_:function(val){
-			eval("'use strict';var "+val)
-			window.val = val
-		},
-
 
 		//XSS filter
 		htmlEncode_:function(str){
