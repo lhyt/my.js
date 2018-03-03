@@ -18,7 +18,7 @@
 <p>内部代码执行完后，也是需要手动resolve或者reject</p>
 example: new \_.Promise_(...).then（function(resolve，reject){[your code];resolve（[data]/reject([err]}）
 
-> new _.Promise_(function(resolve，reject){
+> new \_.Promise_(function(resolve，reject){
  setTimeOut(){console.log(1);resolve()
  }，1000})
  .then(function(resolve，reject){
@@ -91,7 +91,7 @@ function(resolve,begin){
 \_.ajax_(type,async,url,data,timeout,success,contentType,jsonp)
 
 		@params {String} type http请求类型
-	 @params {Boolean} async(true) 是否异步
+	 	@params {Boolean} async(true) 是否异步
 		@params {String} url 
 		@params {\*} data 提交的数据（任何类型）
 		@params {Number} timeout 超时
