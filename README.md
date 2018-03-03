@@ -12,12 +12,11 @@
  
 ### then
 
-example:then（function(resolve，reject){[your code];resolve（[data]/reject([err]}）
+example: then（function(resolve，reject){[your code];resolve（[data]/reject([err]}）
 
- `new _.Promise_(function(resolve，reject){
+>  `new _.Promise_(function(resolve，reject){
  setTimeOut(){console.log(1);resolve()
  }，1000})
- 
  .then(function(resolve，reject){
  setTimeOut(){console.log(2);
  resolve()
