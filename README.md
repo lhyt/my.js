@@ -35,19 +35,22 @@ example: new \_.Promise_(...).then（function(resolve，reject){[your code];reso
  example: new \_.Promise_().all([arr])
  
  all的参数是一个数组，接受的参数是resolve的一个匿名函数，比如：
+ <br>
  function(resolve,begin){
                 setTimeout(function(){
                     console.log(1);
                     resolve();
                 }, 1500);
             }
-            
+<br> 
 执行完成需要手动resolve，当数组全部函数执行完成，state将会变成resolved
 
 ### race
 
 example: new \_.Promise_().race([arr])
+<br>
 和all一样，但是每一个函数里面需要传入另一个参数，begin，表示内部代码块开始执行，也就是说代码块被begin和resolve包围着
+<br>
 function(resolve,begin){
                 setTimeout(function(){
                 	begin();
@@ -56,7 +59,7 @@ function(resolve,begin){
                 }, 1500);
             }
 
-**warning:用了throw Error（）实现中断异步任务，所以后台会报错
+**warning:用了throw Error（）实现中断异步任务，所以后台会报错**
 
 
 
