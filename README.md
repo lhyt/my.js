@@ -4,7 +4,11 @@
   \_是my.js暴露出来的接口，每一次访问_返回一个__实例，而__是一个构造函数，它的原型里面有很多方法，从而可以通过_.xxx()调用里面的方法。
 # API:
 
- ## \_.Promise_:new \_.Promise_(fn/null)
+ ## \_.Promise_:
+ 
+ 类似于es6
+
+实例化： new \_.Promise_(fn/null)
  
  example:new \_.Promise_(function(resolve，reject){[your code];resolve（[data]）/reject([err])})
  
@@ -22,12 +26,17 @@ example: new \_.Promise_(...).then（function(resolve，reject){[your code];reso
  resolve()
  }，500)
 `
+### resolve和reject
+
+表示\_.Promise_对象将要以什么状态结束，它们也可以传入参数，提供后续操作使用：resolve（[data]）,reject([err])
+
  ### all
  
  example: new \_.Promise_().all([arr])
  
- all的参数是一个数组，接受的参数是resolve的一个匿名函数，比如：function(resolve,begin){
-                > setTimeout(function(){
+ all的参数是一个数组，接受的参数是resolve的一个匿名函数，比如：
+ function(resolve,begin){
+                setTimeout(function(){
                     console.log(1);
                     resolve();
                 }, 1500);
@@ -39,13 +48,15 @@ example: new \_.Promise_(...).then（function(resolve，reject){[your code];reso
 
 example: new \_.Promise_().race([arr])
 和all一样，但是每一个函数里面需要传入另一个参数，begin，表示内部代码块开始执行，也就是说代码块被begin和resolve包围着
-> function(resolve,begin){
+function(resolve,begin){
                 setTimeout(function(){
-                	begin()
+                	begin();
                     console.log(4);
                     resolve();
                 }, 1500);
             }
+
+**warning:用了throw Error（）实现中断异步任务，所以后台会报错
 
 
 
