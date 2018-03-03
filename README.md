@@ -18,14 +18,14 @@
 <p>内部代码执行完后，也是需要手动resolve或者reject</p>
 example: new \_.Promise_(...).then（function(resolve，reject){[your code];resolve（[data]/reject([err]}）
 
->  `new _.Promise_(function(resolve，reject){
+> new _.Promise_(function(resolve，reject){
  setTimeOut(){console.log(1);resolve()
  }，1000})
  .then(function(resolve，reject){
  setTimeOut(){console.log(2);
  resolve()
  }，500)
-`
+
 ### resolve和reject
 
 表示\_.Promise_对象将要以什么状态结束，它们也可以传入参数，提供后续操作使用：resolve（[data]）,reject([err])
