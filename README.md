@@ -59,7 +59,54 @@ function(resolve,begin){
                 }, 1500);
             }
 
-**warning:用了throw Error（）实现中断异步任务，所以后台会报错**
+**warning:用了throw Error（）实现中断异步任务，所以后台会报错:sorry!i have to throw error to stop other function**
 
 
+## \_.extension_
 
+类似于es6的扩展运算符，\_.extension_()传入的参数不限，如果最后一个参数是函数，则前面参数将会被注入该函数进行调用。如果传入的参数最后一个不是函数，则返回[...arguments]
+
+\_.extension_(1,2,3,function(){
+		return arguments[0]
+	})//1
+ 
+ \_.extension_(1,2,3)//[1,2,3]
+ 
+ ## \_.new_
+ 
+ 相当于原生的new关键字，传入参数是一个构造函数\_.new_（obj）
+ 
+ ## \_.htmlEncode_
+ 
+ 传入参数类型为字符串。
+ 
+ XSS过滤器，对用户输入的html反转义，防止xss攻击，\_.htmlEncode_（str）
+
+## \_.copy_
+
+对象的深拷贝，传入的应该是object数据类型，如果不是也没有意义，多此一举
+
+## \_.ajax_
+
+\_.ajax_(type,async,url,data,timeout,success,contentType,jsonp)
+
+		@params {String} type http请求类型
+	 @params {Boolean} async(true) 是否异步
+		@params {String} url 
+		@params {\*} data 提交的数据（任何类型）
+		@params {Number} timeout 超时
+		@params {Function} success 成功的回调函数
+		@params {Object} contentType 请求体类型
+		@params {Boolean} jsonp(false) 是否用jsonp，用了只能实现get请求
+
+## \_.sort_
+
+\_.sort_（arr，bool）arr是传入排序数组，bool表示是否逆序排序（默认true顺序排序）
+
+排序算法。如果数组元素数量小于20将会进行冒泡排序，大于20将会使用快速排序
+
+## \_.type_
+
+更高端的判断类型，包括原生的各种对象：Date、Number、String、Regexp等等
+
+example: \_.type_(new Date()) 
