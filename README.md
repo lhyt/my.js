@@ -109,4 +109,24 @@ function(resolve,begin){
 
 更高端的判断类型，包括原生的各种对象：Date、Number、String、Regexp等等
 
-example: \_.type_(new Date()) 
+example: \_.type_(new Date()) //date
+
+## \_.preload_
+
+图片预加载，\_.preload_（图片url，占位图，插入的节点）
+
+三个参数都需要有，当图片没有完全加载，就会用占位图代替
+
+## \_.lazyload_
+
+图片懒加载，\_.lazyload_（图片url组成的数组，占位图）
+
+此api需要自己引入img标签（要多少加多少），src为占位图url，并自己设计一个属性：data-src属性值是要加载的图片的url<img src="占位图.gif" data-src="1.jpg">
+
+当滚动屏幕时候，就加载图片，里面还有防抖节流的优化
+
+## \_.presome_
+
+批量图片预加载，\_.presome_(图片url组成的数组，插入节点的位置)
+
+
