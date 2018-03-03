@@ -231,6 +231,10 @@
 			return arr;	  
 		},
 
+		async_:function(){
+			
+		},
+
 		//new
 		new_:function(constructorFunction){
 			if(arguments.length !== 1){
@@ -551,8 +555,43 @@
 	        var scrollTop = window.scrollY;
 	    	lazyLoad(imgs,preloading)()
 	    	window.addEventListener('scroll',throttle(lazyLoad(imgs,preloading),500,1000));
-    	}
+    	},
 
+    	presome_:function(urlarr,node){
+			var Images = new Array(urlarr.length);
+			var ImgLoaded =0;
+			function validateImages(i){
+			    if (!Images[i].complete)
+			    {
+			        setTimeout(function(){
+			        	Images[i].src = urlarr[i]
+				    	Images[i].onLoad=validateImages(i);
+			        },300);
+			    }
+			    else if (typeof Images[i].naturalWidth != "undefined" && Images[i].naturalWidth == 0)
+			    {
+			        setTimeout(function(){
+			        	Images[i].src = urlarr[i]
+				    	Images[i].onLoad=validateImages(i);
+			        },300);
+			    }
+			    else
+			    {
+			        ImgLoaded++
+			        if(ImgLoaded == l)
+			        {
+			            Images.forEach(function(x){
+							node.appendChild(x)
+						})
+			        }
+			    }
+			}
+				for(var i=0;i<Images.length;i++){
+				    Images[i]=new Image();
+				    Images[i].src = urlarr[i]
+				    Images[i].onLoad=validateImages(i);
+			    }
+    	}
 
 	}
 
