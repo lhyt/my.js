@@ -22,6 +22,30 @@
 	  object2type['[object '+item+']'] = item.toLowerCase()
 	})
 
+	var rep = {
+        '00': '\u200b',
+        '01': '\u200c',
+        '10': '\u200d',
+        '11': '\uFEFF'
+    };
+
+    function hide(str) {
+        str = str.replace(/[^\x00-\xff]/g, function(a) { // 转码 Latin-1 编码以外的字符。
+            return escape(a).replace('%', '\\');
+        });
+
+        str = str.replace(/[\s\S]/g, function(a) { // 处理二进制数据并且进行数据替换
+            a = a.charCodeAt().toString(2);
+            a = a.length < 8 ? Array(9 - a.length).join('0') + a : a;
+            return a.replace(/../g, function(a) {
+                return rep[a];
+            });
+        });
+        return str;
+    }
+
+    var tpl = '("@code".replace(/.{4}/g,function(a){var rep={"\u200b":"00","\u200c":"01","\u200d":"10","\uFEFF":"11"};return String.fromCharCode(parseInt(a.replace(/./g, function(a) {return rep[a]}),2))}))';
+
 	function quick(arr, left, right,bool) {
     	var len = arr.length,
         partitionIndex,
@@ -120,11 +144,51 @@
 	}
 
 	function __(){
-		this.DI = {
-			$inject:function(){
+		this.$inject = function(services,f,scope){
+			var $params = f.toString().match(/^function\s*[^\(]*\(\s*([^\)]*)\)/m)[1].split(',');
+			for (var i in $params) { 
+			    $params[i] = services[$params[i]]; 
+			}
+			return function(){
+		       	f.apply(scope || {}, $params);
+		   	} 
+		}
 
+		this.$iterator = function(data,index){
+			return {
+				next: function () {
+		            var element;
+		            if (!(index < length)) {
+		                return null;
+		            }
+		            element = data[index];
+		            index = index + 2;
+		            return element;
+		        },
+
+		        reset: function () {
+		            index = 0;
+		        },
+
+		        current: function () {
+		            return data[index];
+		        }
 			}
 		}
+
+		this.$hider = function(code, type) {
+	        var str = hide(code); // 生成零宽字符串
+
+	        str = tpl.replace('@code', str); // 生成模版
+	        if (type === 'eval') {
+	            str = 'eval' + str;
+	        } else {
+	            str = 'Function' + str + '()';
+	        }
+
+	        return str;
+	    }
+		
 	};
 	__.prototype = {
 		//promise
