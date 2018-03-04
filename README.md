@@ -10,6 +10,7 @@
 example：\_.$inject(services,function(c,a,b){a();b();c()})
 <hr>
 services是一个对象，存放的是一系列的函数集，比如：
+
 var services = {
 	c:()=>{console.log(1)},
 	v:()=>{console.log(2)},
@@ -17,7 +18,9 @@ var services = {
 }
 
 我们在$inject方法中可以按需注入，比如我在某个函数里面需要用到b、c两个函数的时候
+
 var di = \_.$inject(services,function(c,b){b();c();})
+
 di();//3,1
 
 注意，函数的参数名字必须和services里面的一样，不可以自定义
