@@ -8,7 +8,7 @@
 
 依赖注入：
 example：\_.$inject(services,function(c,a,b){a();b();c()})
-<hr>
+
 services是一个对象，存放的是一系列的函数集，比如：
 
 var services = {
@@ -24,6 +24,34 @@ var di = \_.$inject(services,function(c,b){b();c();})
 di();//3,1
 
 注意，函数的参数名字必须和services里面的一样，不可以自定义
+
+## \_.$iterator
+
+迭代器，\_.$iterator（arr，index）
+
+传入参数是一个数组以及迭代的起点
+
+### next方法
+
+每一次调用，返回的是下一个元素：\_.$iterator([1,2,3],0).next() //1
+
+\_.$iterator([1,2,3],0).next()//2
+
+\_.$iterator([1,2,3],0).next()//3
+
+\_.$iterator([1,2,3],0).next()//null
+
+### reset方法
+
+重置index为0
+
+## \_.$hider
+
+输入参数为字符串类型，也就是toString后的结果
+
+隐藏代码，并可以用eval执行
+
+eval(\_.$hider('console.log(1)'))
 
  ## \_.Promise_:
  
