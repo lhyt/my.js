@@ -176,8 +176,10 @@ example: \_.type_(new Date()) //date
 
 图片懒加载，\_.lazyload_（图片url组成的数组，占位图）
 
-此api需要自己引入img标签（要多少加多少），src为占位图url，并自己设计一个属性：data-src属性值是要加载的图片的url<img src="占位图.gif" data-src="1.jpg">
-
+此api需要自己引入img标签（要多少加多少），src为占位图url，并自己设计一个属性：data-src属性值是要加载的图片的url
+```html
+<img src="占位图.gif" data-src="1.jpg">
+```
 当滚动屏幕时候，就加载图片，里面还有防抖节流的优化
 
 ## \_.presome_
