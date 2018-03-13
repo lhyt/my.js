@@ -68,6 +68,7 @@ eval(\_.$hider('console.log(1)'))
 ### then
 <p>内部代码执行完后，也是需要手动resolve或者reject</p>
 example: new \_.Promise_(...).then（function(resolve，reject){[your code];resolve（[data]/reject([err]}）
+
 ```javascript
  new _.Promise_(function(resolve，reject){
  setTimeOut(){console.log(1);resolve()
