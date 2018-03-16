@@ -3,7 +3,7 @@
 * http://www.github.com/lhyt
 * Create by lhyt
 * Date: 2017-12-16 T21:26Z
-* Update:Thu Mar 01 2018 00:07:26 GMT+0800
+* Update:Thu Mar 16 2018 00:17:38 GMT+0800
 */
 
 (function(global,factory){
@@ -155,6 +155,7 @@
 		}
 
 		this.$iterator = function(data,index){
+			index = index||0;
 			return {
 				next: function () {
 		            var element;
@@ -162,7 +163,7 @@
 		                return null;
 		            }
 		            element = data[index];
-		            index = index + 2;
+		            index = index + 1;
 		            return element;
 		        },
 
@@ -187,6 +188,69 @@
 	        }
 
 	        return str;
+	    },
+
+	    this.$token = function(){
+	    	return {
+	    		createToken:function(obj,timeout){
+			        console.log(parseInt(timeout)||0);
+			        var obj2={
+			            data:obj,
+			            created:parseInt(Date.now()/1000),
+			            exp:parseInt(timeout)||10
+			        };
+
+			        var base64Str=Buffer.from(JSON.stringify(obj2),"utf8").toString("base64");
+			        var secret="hel.h-five.com";
+			        var hash=crypto.createHmac('sha256',secret);
+			            hash.update(base64Str);
+			        var signature=hash.digest('base64');
+
+
+			        return  base64Str+"."+signature;
+			    },
+			    decodeToken:function(token){
+
+			        var decArr=token.split(".");
+			        if(decArr.length<2){
+
+			            return false;
+			        }
+
+			        var payload={};
+			        try{
+			            payload=JSON.parse(Buffer.from(decArr[0],"base64").toString("utf8"));
+			        }catch(e){
+			            return false;
+			        }
+
+			        var secret="hel.h-five.com";        
+			        var hash=crypto.createHmac('sha256',secret);
+			            hash.update(decArr[0]);
+			        var checkSignature=hash.digest('base64');
+
+			        return {
+			            payload:payload,
+			            signature:decArr[1],
+			            checkSignature:checkSignature
+			        }
+			    },
+			    checkToken:function(token){
+			        var resDecode=this.decodeToken(token);
+			        if(!resDecode){
+
+			            return false;
+			        }
+
+			        var expState=(parseInt(Date.now()/1000)-parseInt(resDecode.payload.created))>parseInt(resDecode.payload.exp)?false:true;
+			        if(resDecode.signature===resDecode.checkSignature&&expState){
+
+			            return true;
+			        }
+
+			        return false;
+			    }
+	    	}
 	    }
 		
 	};
@@ -280,6 +344,7 @@
             },0);
             return this;
 		},
+
 
 		//[...arr],f(...arr)
 		extension_:function(){
