@@ -64,6 +64,13 @@ _.$token().decodeToken(token)  //解释token，返回一个对象
 _.$token().checkToken(token)  //检测token，返回boolean
 
 ```
+## \_.$move
+
+传入的是dom元素\_.$move（dom），使得dom元素可以拖拽
+eg:
+```javascript
+var div = document.querySelector('div');_.$move（dom）
+```
 
  ## \_.Promise_:
  
@@ -196,4 +203,6 @@ example: \_.type_(new Date()) //date
 
 批量图片预加载，\_.presome_(图片url组成的数组，插入节点的位置)
 
-
+## \_.add_
+大数相加（包括数字已经大于浏览器承受的情况），传入参数为两个数字字符串\_.add_（a，b）
+如果正常情况，两个特别大的数字直接相加会显示Infinity
