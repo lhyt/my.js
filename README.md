@@ -206,3 +206,12 @@ example: \_.type_(new Date()) //date
 ## \_.add_
 大数相加（包括数字已经大于浏览器承受的情况），传入参数为两个数字字符串\_.add_（a，b）
 如果正常情况，两个特别大的数字直接相加会显示Infinity
+
+## \_.event_
+自定义事件
+ ```javascript
+var e = new _.event_()
+e.on('a',function(b){console.log(b)})//注册事件
+e.emit('a',1)//触发事件
+e.remove('a')//删除事件
+ ```
