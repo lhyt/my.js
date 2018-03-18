@@ -3,7 +3,7 @@
 * http://www.github.com/lhyt
 * Create by lhyt
 * Date: 2017-12-16 T21:26Z
-* Update:Thu Mar 16 2018 00:17:38 GMT+0800
+* Update:Thu Mar 01 2018 00:07:26 GMT+0800
 */
 
 (function(global,factory){
@@ -251,7 +251,38 @@
 			        return false;
 			    }
 	    	}
-	    }
+	    },
+
+
+	    this.$move = function (ele){
+			this.ele = ele
+			this.ismoving = false
+			var that = this
+			var w = window.innerWidth
+			var h = window.innerHeight
+			var height = +document.defaultView.getComputedStyle(this.ele).height.slice(0,-2)
+			var width = +document.defaultView.getComputedStyle(this.ele).width.slice(0,-2)
+			this._x = this._y = this.startX = this.startY= 0
+			this.ele.onmousedown = function(e){
+				that.ismoving = true
+				that.startX = e.clientX
+				that.startY = e.clientY
+			}
+			this.ele.onmousemove = function(e){
+				if(that.ismoving){
+					if((+that._x+ e.clientX-that.startX<=0)||(+that._y+ e.clientY-that.startY<=0)||(+that._x+ e.clientX-that.startX>=+w-width)||(+that._y+ e.clientY-that.startY>=+h-height)){
+						return
+					}
+					that.ele.style.marginLeft =+that._x+ e.clientX-that.startX +'px'
+					that.ele.style.marginTop =+that._y+ e.clientY-that.startY +'px'
+				}
+			}
+			this.ele.onmouseleave = this.ele.onmouseup = function(){
+				that.ismoving = false
+				that._x = that.ele.style.marginLeft.slice(0,-2)
+				that._y = that.ele.style.marginTop.slice(0,-2)
+			}
+		}
 		
 	};
 	__.prototype = {
@@ -715,7 +746,54 @@
 				    Images[i].src = urlarr[i]
 				    Images[i].onLoad=validateImages(i);
 			    }
-    	}
+    	},
+
+    	add_:function(a,b){
+				if(typeof a !== 'string'||typeof b !== 'string'){
+					console.error('require string')
+					return
+				}
+				if(isNaN(+a)||isNaN(+b)){
+					console.error('require to be normal number string')
+					return		
+				}
+				var min = a.length>b.length?b:a
+				var max = a.length<b.length?b:a
+				var len = min.length
+				var lenmax = max.length
+				var upgrade = 0
+				if(a.length===b.length){
+					min = a;
+					max = b;
+				}
+				var res = []
+				while(len--){
+					var sum = parseInt(min[len])+parseInt(max[--lenmax])
+					if(upgrade){
+						sum += upgrade
+						upgrade = 0
+					}
+					if(sum>=10){
+						sum -= 10
+						upgrade = 1
+					}	
+					res.unshift(sum)
+				}
+				res = res.join("")
+				if(upgrade){
+					if(lenmax-len-1>0){
+						var mid = +max.slice(lenmax-len-2,lenmax-len-1)+1
+						res = max.slice(0,lenmax-len-2)+mid+res
+					}else if(lenmax-len===1){
+						res = 1+parseInt(max.slice(0,1))+res
+					}
+				}else if(a.length!==b.length){
+					res = max.slice(0,lenmax-len-1) + res
+				}
+				return res
+			}
+
+
 
 	}
 
