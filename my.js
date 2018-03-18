@@ -791,6 +791,31 @@
 					res = max.slice(0,lenmax-len-1) + res
 				}
 				return res
+			},
+		
+			event_:function (){
+				this.list=[],
+				this.on=function(key,cb){
+					if(!this.list[key]){
+						this.list[key] = []
+					}
+					this.list[key].push(cb)
+				},
+				this.emit = function(){
+					var key = Array.prototype.shift.call(arguments)
+					var e = this.list[key]
+					if(!e){
+						console.error('event is not on')
+						return
+					}
+					var args = Array.prototype.slice.call(arguments)
+					for(var i = 0;i<e.length;i++){
+						e[i].apply(null,args)
+					}
+				},
+				this.remove=function(key){
+					delete this.list[key]
+				}
 			}
 
 
