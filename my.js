@@ -832,7 +832,37 @@
 				this.remove=function(key){
 					delete this.list[key]
 				}
+			},
+		
+		 bfs_:function(arr,start,end){
+			var row = arr.length
+			if(arr[0].length!==row){
+			    console.error('require a matrix')
+				return
 			}
+			var quene = []
+			var i = start
+			var visited = {}
+			var order = []
+			quene.push(i)
+			while(quene.length){
+				for(var j = 0;j<row;j++){
+					if(arr[i][j]){
+						if(!visited[j]){
+							quene.push(j)//队列加入未访问
+						}
+					}
+				}
+				quene.shift()//取出队列第一个
+				visited[i] = true//记录已经访问
+				while(visited[quene[0]]){
+					quene.shift()
+				}
+				order.push(i)//记录顺序
+				i = quene[0]
+			}
+			return {visited:visited,result:!!visited[end],order:order}
+		}
 
 
 
