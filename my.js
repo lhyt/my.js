@@ -528,24 +528,40 @@
 		},
 
 		//object's copy
-		copy_:function(obj){
-		    var buf
-		    if(obj instanceof Array){
-		        buf = []
-		        var i = obj.length
-		        while(i--){
-		            buf[i] = copy(obj[i])
-		        }
-		        return buf
-		    }else if(obj instanceof Object){
-		        buf = {}
-		        for(var x in obj){
-		            buf[x] = copy(obj[x])
-		        }
-		        return buf
-		    }else{
-		        return obj
-		    }
+		copy_:function(arr){
+			var temp
+			if (typeof arr == 'number'||typeof arr == 'boolean'||typeof arr == 'string') {
+				return arr.valueOf() 
+			}
+			if(arr instanceof Array){
+				temp = []
+				for(x in arr){
+					temp[x] = copy(arr[x])
+				}
+				return temp
+			}else if(arr instanceof RegExp){
+				temp = arr.valueOf()
+				var str = (temp.global ? 'g' : '') +(temp.ignoreCase ? 'i': '')+(temp.multiline ? 'm' : '')
+				return new RegExp(arr.valueOf().source,str)
+			}else if(arr instanceof Function){
+				var str = arr.toString();
+				/^function\s*\w*\s*\(\s*\)\s*\{(.*)/.test(str);
+				var str1 = RegExp.$1.slice(0,-1);
+				return new Function(str1)
+			}else if(arr instanceof Date){
+				return new Date(arr.valueOf());
+			}else if(arr instanceof Object){
+				try{
+					temp = JSON.parse(JSON.stringify(arr))
+				}catch(e){
+					console.error(e)
+					return
+				}
+				if(arr.__proto__.constructor !== Object){
+					temp.__proto__.constructor = arr.__proto__.constructor
+				}
+				return temp
+			}
 		},
 
 		parse_:function(url){
