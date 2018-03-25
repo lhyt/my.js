@@ -862,6 +862,29 @@
 				i = quene[0]
 			}
 			return {visited:visited,result:!!visited[end],order:order}
+		},
+		
+		dfs_:function (arr,start,end){
+			var row = arr.length
+			var visited = {}
+			var i = start
+			var index = null
+			var stark = []
+			var order = []
+			function d(i){
+				stark.push(i)
+				for(var j = 0;j<row;j++){
+					if(arr[i][j]&&!visited[j]){
+						visited[j] = true
+						d(j)
+					}
+				}
+				order.push(stark.pop())
+				visited[i] = true
+				return 
+			}
+			d(i)
+			return {visited:visited,result:!!visited[end],order:!!visited[end]?order:order.slice(1)}
 		}
 
 
