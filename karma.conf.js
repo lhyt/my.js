@@ -1,5 +1,5 @@
 // Karma configuration
-// Generated on Tue Feb 06 2018 15:14:10 GMT+0800 (中国标准时间)
+// Generated on Tue Mar 06 2018 15:14:10 GMT+0800 (中国标准时间)
 
 module.exports = function(config) {
   config.set({
@@ -14,30 +14,24 @@ module.exports = function(config) {
 
 
     // list of files / patterns to load in the browser
-    files: ['src/*.js'],
+    files: ['*.js'],
+
 
     // list of files / patterns to exclude
-    exclude: ['karma.conf.js'
-    ],
+    exclude: ['karma.conf.js'],
 
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-         'src/*.js': ['coverage']
     },
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress', 'coverage'],
+    reporters: ['progress'],
 
-
-    coverageReporter: {
-      type: 'html',
-      dir: 'coverageReporter/'
-    },
 
     // web server port
     port: 9876,
