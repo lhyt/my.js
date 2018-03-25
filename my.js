@@ -3,7 +3,7 @@
 * http://www.github.com/lhyt
 * Create by lhyt
 * Date: 2017-12-16 T21:26Z
-* Update:Thu Mar 01 2018 00:07:26 GMT+0800
+* Update:Sun Mar 25 2018 17:40:13 GMT+0800
 */
 
 (function(global,factory){
