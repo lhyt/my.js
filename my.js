@@ -83,17 +83,19 @@
 	    return arr;
 	}
 
-	function  bubble(arr){
-	for(var i = 0,len = arr.length;i<len;i++){
-		for (var j = 0; i < len-1-j; j++) {
-			if(arr[j]>arr[j+1]){
-				var temp = arr[j+1]
-				arr[j+1] = arr[j]
-				arr[j] = temp
-			}
+	 function bubble(arr) {
+	    var len = arr.length;
+	    var preIndex, current;
+	    for (var i = 1; i < len; i++) {
+		preIndex = i - 1;
+		current = arr[i];
+		while(preIndex >= 0 && arr[preIndex] > current) {
+		    arr[preIndex+1] = arr[preIndex];
+		    preIndex--;
 		}
-	}
-	return arr
+		arr[preIndex+1] = current;
+	    }
+	    return arr;
 	}
 
 	function  bubblereverse(arr){
