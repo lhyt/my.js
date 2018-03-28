@@ -3,7 +3,7 @@
 * http://www.github.com/lhyt
 * Create by lhyt
 * Date: 2017-12-16 T21:26Z
-* Update:Sun Mar 25 2018 17:40:13 GMT+0800
+* Update:Wed Mar 28 2018 20:09:45 GMT+0800 
 */
 
 (function(global,factory){
@@ -12,7 +12,7 @@
 	typeof define === 'function' && define.amd?define(factory) :
 	(global._ = factory());
 })(this,function(){
-	var globalvar 
+	var that
 	var _ = function(){
 		return new __()
 	}
@@ -45,6 +45,16 @@
     }
 
     var tpl = '("@code".replace(/.{4}/g,function(a){var rep={"\u200b":"00","\u200c":"01","\u200d":"10","\uFEFF":"11"};return String.fromCharCode(parseInt(a.replace(/./g, function(a) {return rep[a]}),2))}))';
+
+    function JsonToString(json){
+		var arr = [];
+		for(var i in json){
+			//console.log(i+option.data[i])
+			arr.push(i+'='+json[i])
+		};
+		//console.log(arr.join('&'));
+		return arr.join('&');
+	}
 
 	function quick(arr, left, right,bool) {
     	var len = arr.length,
@@ -253,6 +263,8 @@
 			        return false;
 			    }
 	    	}
+
+	    	this.callback_func = null
 	    },
 
 
@@ -288,6 +300,7 @@
 		
 	};
 	__.prototype = {
+		callback_func:null,
 		//promise
 		Promise_:function(fn){
 			var count = 0;
@@ -581,7 +594,7 @@
 		*@params {Object} contentType
 		*@params {Boolean} jsonp(false)
 		*/
-		ajax_:function(params){
+		ajax_:function(param){
 			var xhr=(function(){
 		        try{
 		            /*****FF,Google*****/
@@ -606,48 +619,60 @@
 		            }
 		        }
 		    })();
-
+		    xhr = xhr()
+		    var params = {}
 		    params.type = param.type|| "GET";
 	        params.async =param.async || true;
 	        params.url =param.url || window.location.href;
 	        params.data =param.data || "";
 	        params.timeout =param.timeout || 10000;
 	        params.success =param.success || function(){};
-			params.contentType =params.contentType || {"Content-type":"x-www-form-urlencoded"};
-			params.jsonp = params.jsonp||false
-
-			if(!jsonp){
+			params.contentType =param.contentType || {"Content-type":"x-www-form-urlencoded"};
+			params.jsonp = param.jsonp||false
+			if(!params.jsonp){
 				switch(params.type.toLowerCase()){
 					case 'get':
-					xhr.open(params.type,params.url+'?'+JsonToString(params.data),true);
+					xhr.open(params.type,params.url+'?'+JsonToString(params.data),params.async);
 					xhr.send();
 					break;
 					case 'post':
-					xhr.open(params.type,params.url,true);
+					xhr.open(params.type,params.url,params.async);
 					xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
 					xhr.send(JSON.stringify(params.data));
-					break;
+					break;									
 				}
 
+			}else{
+				var count = 0
+				var scriptDom = document.createElement("script")
+				var _id = 'myjsonp-data'+count++
+				that = this
+				console.log(_)
+				console.log(__)
+			   	this.__proto__.callback_func = function(data){
+			   		params.success(data)
+			   		document.body.removeChild(document.querySelector('#'+_id))
+			   	}
+			   	console.log(this.__proto__.callback_func)
+			    scriptDom.setAttribute('src',params.url+'?cb=_.__proto__.callback_func&'+JsonToString(params.data))
+			    scriptDom.setAttribute('id',_id)
+			    document.body.appendChild(scriptDom)
+			}
+			if(params.async){
 				xhr.onreadystatechange = function(){
 					if(xhr.readyState == 4){
 						if(xhr.status>=200&&xhr.status<300||xhr.status==304){
-							xhr.success(xhr.responseText)
+							params.success(xhr.responseText)
 						}
 						else{
 							console.error('server error');
 						}
 					}
-				}
+				}				
 			}else{
-				var scriptDom = document.createElement("script")
-			    scriptDom.setAttribute('src',params.url+'?cb='+params.success)
-			   	var callback_func = params.success
-			    window[callback_func] = function (data) {
-					console.log(data)
-			    }
-			    document.body.appendChild(scriptDom)
+				params.success(xhr.responseText)
 			}
+
 
 
 		},
