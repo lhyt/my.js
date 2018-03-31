@@ -18,8 +18,8 @@ describe("test", function() {
 		expect(a.__proto__.constructor).toEqual(b.__proto__.constructor);
 		n = "obj"
     })
-   /*it('objcircle',function(){
-		const obj = {
+   it('objcircle',function(){
+		var obj1 = {
 		    foo: {
 		        name: 'foo',
 		        bar: {
@@ -31,11 +31,11 @@ describe("test", function() {
 		        }
 		    }
 		}
-		obj.foo.bar.baz.aChild = obj.foo
+		obj1.foo.bar.baz.aChild = obj1.foo
 		n = "objcircle"
-		expect(obj.__proto__.constructor).toEqual(copy(obj).__proto__.constructor);
-		
-    })*/
+		expect(obj1.__proto__.constructor).toEqual(copy(obj1).__proto__.constructor);
+		expect(obj1).not.toBe(copy(obj1));
+    })
     it('date',function(){
     	var d = new Date()
     	expect(d).not.toBe(copy(d));
