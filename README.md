@@ -165,11 +165,12 @@ function(resolve,begin){
 		@params {String} type http请求类型
 	 	@params {Boolean} async(true) 是否异步
 		@params {String} url 
-		@params {\*} data 提交的数据（任何类型）
+		@params {\*} data 提交的数据，json格式{name:'a',age:2}
 		@params {Number} timeout 超时
 		@params {Function} success 成功的回调函数
 		@params {Object} contentType 请求体类型
 		@params {Boolean} jsonp(false) 是否用jsonp，用了只能实现get请求
+如果是jsonp，不用设定type了。jsonp必须有回调函数
 
 ## \_.sort_
 
