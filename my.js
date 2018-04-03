@@ -544,47 +544,80 @@
 
 		//object's copy
 		copy_:function(arr){
-			var temp = {}
-			var circle
-			var result
-			var reset = false
-			function traverse(obj){
-				for(x in obj){
-					if(!reset&&obj.hasOwnProperty(x)){
-						if(!temp[x]){
-							temp[x] = obj[x]
-						}else if(typeof obj[x] == 'object'&&typeof temp[x] == 'object'){
-							try{
-								JSON.stringify(obj[x])
-							}catch(e){
-								circle = obj[x]
-								obj[x] = 'ccc'
-								break
-							}finally{
-								return traverse(obj[x])
-							}		
-						}
-						if(typeof obj[x] == 'object'){
-							return traverse(obj[x])
-						}
-					}else if(reset){
-						console.log(obj[x])
-						if(obj[x] == 'ccc'){
-							obj[x] = circle
-							return
-						}
-						if(typeof obj[x] == 'object'){
-							return traverse(obj[x])
-						}
-					}
-				}
+			var temp
+			if (typeof arr == 'number'||typeof arr == 'boolean'||typeof arr == 'string') {
+				return arr.valueOf() 
 			}
-			traverse(obj)
-			result = JSON.parse(JSON.stringify(obj))
-			reset = true
-			traverse(result)
-			traverse(obj)
-			return result
+			if(arr instanceof Array){
+				temp = []
+				for(x in arr){
+					temp[x] = copy(arr[x])
+				}
+				return temp
+			}else if(arr instanceof RegExp){
+				temp = arr.valueOf()
+				var str = (temp.global ? 'g' : '') +(temp.ignoreCase ? 'i': '')+(temp.multiline ? 'm' : '')
+				return new RegExp(arr.valueOf().source,str)
+			}else if(arr instanceof Function){
+				var str = arr.toString();
+				/^function\s*\w*\s*\(\s*\)\s*\{(.*)/.test(str);
+				var str1 = RegExp.$1.slice(0,-1);
+				return new Function(str1)
+			}else if(arr instanceof Date){
+				return new Date(arr.valueOf());
+			}else if(arr instanceof Object){
+				try{
+					temp = JSON.parse(JSON.stringify(arr))
+				}catch(e){
+						var temp1 = {}
+						var circle
+						var result
+						var reset = false
+						function traverse(obj){
+							for(x in obj){
+								if(!reset&&obj.hasOwnProperty(x)){
+									if(!temp1[x]){
+										temp1[x] = obj[x]
+									}else if(typeof obj[x] == 'object'&&typeof temp1[x] == 'object'){
+										try{
+											JSON.stringify(obj[x])
+										}catch(e){
+											circle = obj[x]
+											obj[x] = 'ccc'
+											break
+										}finally{
+											return traverse(obj[x])
+										}		
+									}
+									if(typeof obj[x] == 'object'){
+										return traverse(obj[x])
+									}
+								}else if(reset){
+									console.log(obj[x])
+									if(obj[x] == 'ccc'){
+										obj[x] = circle
+										return
+									}
+									if(typeof obj[x] == 'object'){
+										return traverse(obj[x])
+									}
+								}
+							}
+						}
+						traverse(arr)
+						result = JSON.parse(JSON.stringify(arr))
+						reset = true
+						traverse(result)
+						traverse(arr)
+						temp = result		
+				}finally{
+					if(arr.__proto__.constructor !== Object){
+						temp.__proto__.constructor = arr.__proto__.constructor
+					}
+					return temp
+				}
+
+			}
 		},
 
 		parse_:function(url){
