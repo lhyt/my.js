@@ -620,8 +620,28 @@
 			}
 		},
 
-		parse_:function(url){
-
+		urlparse_:function(url){
+			var protocol = url.match(/\w*(?=\:)/)[0]
+			var host = url.match(/\:\/\/([^\/]*)[\/]{1}/)[1]
+			var reg  =new RegExp(host + '/(.*/\\w+)')
+			var path = url.match(reg)[1]
+			var queryarr = url.split('?')[1].split('&')
+			var hash
+			if(queryarr[queryarr.length-1].indexOf('#')){
+				hash = queryarr[queryarr.length-1].split('#')[1]
+				queryarr[queryarr.length-1] = queryarr[queryarr.length-1].split('#')[0]
+			}
+			var query = {}
+			queryarr.forEach(function(x){
+				query[x.split('=')[0]] = x.split('=')[1]
+			})
+			return {
+				protocol:protocol,
+				host:host,
+				path:path,
+				query:query,
+				hash:hash
+			}
 		},
 
 		//ajax:type,async,url,data,timeout,success,contentType,jsonp
