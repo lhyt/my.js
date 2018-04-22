@@ -3,7 +3,7 @@
 * http://www.github.com/lhyt
 * Create by lhyt
 * Date: 2017-12-16 T21:26Z
-* Update:Wed Mar 28 2018 20:09:45 GMT+0800 
+* Update:Wed Apr 20 2018 00:09:45 GMT+0800 
 */
 
 (function(global,factory){
@@ -57,41 +57,33 @@
 	}
 
 	function quick(arr, left, right,bool) {
-    	var len = arr.length,
-        partitionIndex,
-        left = typeof left == 'number' ? left : 0,
-        right = typeof right == 'number' ? right : len-1;
-
-	    if (left < right) {
-		    var pivot = left, //（set pivot）
-		    index = pivot + 1;
-		    for (var i = index; i <= right; i++) {
-		    	if(bool){
-		    		if (arr[i] < arr[pivot]) {
-		            var temp = arr[i];
-				    arr[i] = arr[index];
-				    arr[index] = temp;
-		            index++;
-		        	}    
-		    	}else{
-		    		if (arr[i] > arr[pivot]) {
-		            var temp = arr[i];
-				    arr[i] = arr[index];
-				    arr[index] = temp;
-		            index++;
-		        	} 
-		    	}
-    
-		    }
-		    var temp = arr[pivot];
-	    	arr[pivot] = arr[index - 1];
-	    	arr[index - 1] = temp;
-		    partitionIndex = index-1;
-	        quick(arr, left, partitionIndex-1,bool);
-	        quick(arr, partitionIndex+1, right,bool);
-	    }
-	    return arr;
-	}
+    		var i = 1,j = arr.length,p = arr[0],index
+			if(arr.length <=3 ){
+				return arr.sort((a,b)=>a-b)
+			}
+			while(j--){
+					if(j<=i&&i!==1){
+						var temp = arr[j]
+						arr[j] = p
+						arr[0] = temp
+						index = j
+						break;
+					}else if(i===1&&j===i){
+						return arr
+					}
+				if(arr[j]<=p){
+					while(i++){
+						if(arr[i]>p){
+							var temp = arr[i]
+							arr[i] = arr[j]
+							arr[j] = temp
+							break
+						}
+					}
+				}
+			}
+			return quick(arr.slice(0,index)).concat(quick(arr.slice(index)))
+		}
 
 	 function bubble(arr) {
 	    var len = arr.length;
@@ -973,7 +965,48 @@
 			}
 			d(i)
 			return {visited:visited,result:!!visited[end],order:!!visited[end]?order:order.slice(1)}
-		}
+		},
+		myReady:function (fn){  
+		    //DOMContentLoaded事件
+		    if ( document.addEventListener ) {  
+		        document.addEventListener("DOMContentLoaded", fn, false);  
+		    } else {  
+		        IEContentLoaded(fn);  
+		    }  
+		    //IE模拟DOMContentLoaded  
+		    function IEContentLoaded (fn) {  
+		        var d = window.document;  
+		        var done = false;  
+		  
+		        //只执行一次用户的回调函数init()  
+		        var init = function () {  
+		            if (!done) {  
+		                done = true;  
+		                fn();  
+		            }  
+		        };  
+		        (function () {  
+		            try {  
+		                // DOM树未创建完之前调用doScroll会抛出错误  
+		                d.documentElement.doScroll('left');  
+		            } catch (e) {  
+		                //延迟再试一次~  
+		                setTimeout(arguments.callee, 50);  
+		                return;  
+		            }  
+		            // 没有错误就表示DOM树创建完毕，然后立马执行用户回调  
+		            init();  
+		        })();  
+		        //监听document的加载状态  
+		        d.onreadystatechange = function() {  
+		            // 如果用户是在domReady之后绑定的函数，就立马执行  
+		            if (d.readyState == 'complete') {  
+		                d.onreadystatechange = null;  
+		                init();  
+		            }  
+		        }  
+		    }  
+		}  
 
 
 
