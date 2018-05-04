@@ -55,15 +55,6 @@ di();//3,1
 
 eval(\_.$hider('console.log(1)'))
 
-## \_.$token(慎用，必须安装一些依赖)
-
-生成token，用法：
-```javascript
-_.$token().createToken(data,timeout) //创建token，data是一个json对象
-_.$token().decodeToken(token)  //解释token，返回一个对象
-_.$token().checkToken(token)  //检测token，返回boolean
-
-```
 ## \_.$move
 
 传入的是dom元素\_.$move（dom），使得dom元素可以拖拽
