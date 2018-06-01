@@ -853,38 +853,14 @@
 					console.error('require to be normal number string')
 					return		
 				}
-				var min = a.length>b.length?b:a
-				var max = a.length<b.length?b:a
-				var len = min.length
-				var lenmax = max.length
-				var upgrade = 0
-				if(a.length===b.length){
-					min = a;
-					max = b;
-				}
-				var res = []
-				while(len--){
-					var sum = parseInt(min[len])+parseInt(max[--lenmax])
-					if(upgrade){
-						sum += upgrade
-						upgrade = 0
-					}
-					if(sum>=10){
-						sum -= 10
-						upgrade = 1
-					}	
-					res.unshift(sum)
-				}
-				res = res.join("")
-				if(upgrade){
-					if(lenmax-len-1>0){
-						var mid = +max.slice(lenmax-len-2,lenmax-len-1)+1
-						res = max.slice(0,lenmax-len-2)+mid+res
-					}else if(lenmax-len===1){
-						res = 1+parseInt(max.slice(0,1))+res
-					}
-				}else if(a.length!==b.length){
-					res = max.slice(0,lenmax-len-1) + res
+				var arr = a.split('');
+				var brr = b.split('');
+				var up = 0;
+				var res = '';
+				while(arr.length || brr.length || up){
+					up += ~~arr.pop() + (~~brr.pop());
+					res = up % 10 + res;
+					up = up>9;
 				}
 				return res
 			},
