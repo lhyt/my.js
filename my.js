@@ -146,7 +146,190 @@
     	}
 
 	}
+	function handlePromise(promise2, x, resolve, reject) {
+	    if (promise2 === x) { 
+	        return reject(new TypeError('circular reference')); 
+	    }
+	    if (x !== null && (typeof x === 'object' || typeof x === 'function')) {
+	        var called; 
+	        try {
+	            var then = x.then; 
+	            if (typeof then === 'function') { 
+	                then.call(x, y => {  
+	                    if (called) return;
+	                    called = true;
+	                    handlePromise(promise2, y, resolve, reject); 
+	                }, r => {
+	                    if (called) return;
+	                    called = true;
+	                    reject(r)
+	                })
+	            } else { 
+	                resolve(x); 
+	            }
+	        } catch (e) {
+	            if (called) return;
+	            called = true;
+	            reject(e);
+	        }
+	    } else { 
+	        resolve(x);
+	    }
+	}
 
+	function (execute) {	
+				this.status = 'pending';
+				this.data = void 0 ;
+				this.reason = void 0 ;
+				var that = this;
+				this.resolvecb = [];
+				this.rejectcb = [];
+
+				function resolve (data) {
+					if(that.status === 'pending'){
+						that.data = data;
+						that.status = 'resolved';
+						that.resolvecb.forEach(fnc => fnc());		
+						return data;	
+					}
+
+				}
+				function reject (reason) {
+					if(that.status === 'pending'){
+						that.reason = reason;
+						that.status = 'rejected';
+						that.rejectcb.forEach(fnc => fnc());	
+						throw reason;		
+					}
+
+				}
+				try{
+					execute(resolve,reject)
+				}catch(e){
+					reject(e)
+				}finally{
+					var s = {'[[PromiseStatus]]':null,'[[PromiseValue]]':null};
+					Object.defineProperties(s,{
+						'[[PromiseStatus]]':{
+							get(){
+								return that.status
+							}
+						},
+						'[[PromiseValue]]':{
+							get(){
+								return that.status === 'rejected'?that.reason:that.data
+							}
+						}
+
+					})
+					s.__proto__ = this;
+				return s
+				}
+
+			}
+
+
+
+		_Promise.prototype.then = function(onresolve,onreject) {
+			var that = this
+			var mid_Promise
+			onresolve = typeof onresolve === 'function' ? onresolve : function(val){return val};
+
+			onreject = typeof onreject === 'function' ? onreject : function (err){throw err};
+			if(that.status === 'resolved'){
+				mid_Promise = new _Promise(function(resolve,reject){
+					setTimeout(function(){
+						try{
+							var temp = onresolve(that.data)
+							handlePromise(mid_Promise,temp,resolve,reject)
+						}catch(e){
+							reject(e)
+						}				
+					})
+				})
+			}
+			if(that.status === 'rejected'){
+				mid_Promise = new _Promise(function(resolve,reject){
+					setTimeout(function(){
+						try{
+							var temp = onreject(that.reason)
+							handlePromise(mid_Promise,temp,resolve,reject)
+						}catch(e){
+							reject(e)
+						}
+					})
+				})
+			}
+			if(that.status === 'pending'){
+				mid_Promise = new _Promise(function(resolve,reject){
+					setTimeout(function(){
+						that.resolvecb.push(function(){
+							try{
+								var temp = onresolve(that.data)
+								handlePromise(mid_Promise,temp,resolve,reject)
+							}catch(e){
+								reject(e)
+							}
+						});
+
+						that.rejectcb.push(function(){
+							try{
+								var temp = onreject(that.reason)
+								handlePromise(mid_Promise,temp,resolve,reject)
+							}catch(e){
+								reject(e)
+							}
+						})
+					})
+				})
+			}
+			return mid_Promise
+		}
+
+		_Promise.prototype.catch = function (handle) {
+			return _Promise.prototype.then(null,handle)
+		}
+
+		_Promise.prototype.finally = function (onresolve,onreject) {
+			onresolve = typeof onresolve === 'function' ? onresolve : function(val){return val};
+			onreject = typeof onreject === 'function' ? onreject : function (err){throw err};
+			return _Promise.prototype.then(onresolve,onreject)
+		}
+
+		_Promise.resolve = function (data) {
+			return new _Promise(resolve=>resolve(data))
+		}
+
+		_Promise.reject = function (reason) {
+			return new _Promise(null,reject=>reject(reason))
+		}
+
+		_Promise.all = function (promiseArrs) { //在Promise类上添加一个all方法，接受一个传进来的promise数组
+		    return new _Promise((resolve, reject) => { //返回一个新的Promise
+		        let arr = []; //定义一个空数组存放结果
+		        let i = 0;
+		        function handleData(index, data) { //处理数据函数
+		            arr[index] = data;
+		            i++;
+		            if (i === promiseArrs.length) { //当i等于传递的数组的长度时 
+		                resolve(arr); //执行resolve,并将结果放入
+		            }
+		        }
+		        for (let i = 0; i < promiseArrs.length; i++) { //循环遍历数组
+		            promiseArrs[i].then((data) => {
+		                handleData(i, data); //将结果和索引传入handleData函数
+		            }, reject)
+		        }
+		    })
+		}
+
+		_Promise.race = function (promises) {
+		    return new _Promise((resolve, reject) => {
+		        for (let i = 0; i < promises.length; i++) {
+		            promises[i].then(resolve, reject);
+		        }
+		    })
+		}
 	function __(){
 		this.$inject = function(services,f,scope){
 			var $params = f.toString().match(/^function\s*[^\(]*\(\s*([^\)]*)\)/m)[1].split(',');
@@ -294,94 +477,7 @@
 	__.prototype = {
 		callback_func:null,
 		//promise
-		Promise_:function(fn){
-			var count = 0;
-            var that = this;
-            fn = fn||function(resolve,reject){resolve()};
-            this.data = undefined;
-            this.allcount = 0;
-            this.list = [];
-            this.state = 'pending';
-            this.isall = false;
-            this.alllist = [];
-            this.err = undefined;
-            this.israce = false;
-            this.handlerace = false;
-            this.racinglist = []
-            this.ok = false
-
-            this.then = function(callback){
-                that.list.push(callback);
-                return that;
-            }
-
-            this.resolve = function(data){
-            	that.data = data || that.data
-            	if(that.israce&&that.handlerace){
-            		that.ok = true
-            	}else if(that.israce){
-            		that.handlerace = true;
-            		this.state = 'resolved'
-            		return;
-            	}
-            	
-            	if(that.isall){
-            		that.allcount++
-            	}else if(count == that.list.length) {//then
-                	that.state = 'resolved';
-                	return that.data;
-                }
-                if(that.allcount == that.alllist.length+1){//all
-                	that.state = 'resolved';
-                	that.isall = false;
-                	return;
-                }
-                if(that.list[count++]){//common
-                	that.list[count++](that.resolve,that.reject);
-                }
-                
-            }
-            this.alling = function(){
-            	that.alllist.forEach(function(x,index){
-            		x(that.resolve);
-            	})
-            }
-
-            this.racing = function(){
-            	that.alllist.forEach(function(x,index){
-            		x(that.resolve,that.begin);
-            	})    	
-            }
-            this.begin = function(){
-            	if(that.ok){
-            		throw Error('sorry!i have to throw error to stop other function')
-            	}
-            }
-
-            this.reject = function(err){
-            	that.err = err || that.err;
-				that.state = 'rejected';
-				console.error('this promise is rejected');
-                return;
-            }
-
-            this.all = function(arr){
-            	that.alllist = arr;
-            	that.isall = true;
-				fn(that.alling);
-            }
-
-            this.race = function(arr){
-            	that.alllist = arr;
-            	fn(that.racing);	
-            	that.israce = true;
-            	
-            }
-            setTimeout(function(){
-            	fn(that.resolve,that.reject);
-            },0);
-            return this;
-		},
+		 _Promise:_Promise,
 
 
 		//[...arr],f(...arr)
@@ -700,8 +796,6 @@
 				var scriptDom = document.createElement("script")
 				var _id = 'myjsonp-data'+count++
 				that = this
-				console.log(_)
-				console.log(__)
 			   	this.__proto__.callback_func = function(data){
 			   		params.success(data)
 			   		document.body.removeChild(document.querySelector('#'+_id))
@@ -853,14 +947,38 @@
 					console.error('require to be normal number string')
 					return		
 				}
-				var arr = a.split('');
-				var brr = b.split('');
-				var up = 0;
-				var res = '';
-				while(arr.length || brr.length || up){
-					up += ~~arr.pop() + (~~brr.pop());
-					res = up % 10 + res;
-					up = up>9;
+				var min = a.length>b.length?b:a
+				var max = a.length<b.length?b:a
+				var len = min.length
+				var lenmax = max.length
+				var upgrade = 0
+				if(a.length===b.length){
+					min = a;
+					max = b;
+				}
+				var res = []
+				while(len--){
+					var sum = parseInt(min[len])+parseInt(max[--lenmax])
+					if(upgrade){
+						sum += upgrade
+						upgrade = 0
+					}
+					if(sum>=10){
+						sum -= 10
+						upgrade = 1
+					}	
+					res.unshift(sum)
+				}
+				res = res.join("")
+				if(upgrade){
+					if(lenmax-len-1>0){
+						var mid = +max.slice(lenmax-len-2,lenmax-len-1)+1
+						res = max.slice(0,lenmax-len-2)+mid+res
+					}else if(lenmax-len===1){
+						res = 1+parseInt(max.slice(0,1))+res
+					}
+				}else if(a.length!==b.length){
+					res = max.slice(0,lenmax-len-1) + res
 				}
 				return res
 			},
